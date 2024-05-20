@@ -1,5 +1,5 @@
 const Task = require("../models/taskModel")
-const io = require("../../app")
+//const io = require("../../app")
 
 const getTasks = async (req,res) => {
     const tasks = await Task.find({user:req.user._id})
@@ -8,6 +8,7 @@ const getTasks = async (req,res) => {
 
 const createTask = async (req,res) => {
     const {title,description} = req.body
+    const io = req.app.get('io')
     const task = new Task({
         user:req.user._id,
         title,
@@ -22,7 +23,6 @@ const createTask = async (req,res) => {
 const updateTask = async (req,res) => {
     const {title,description,completed} = req.body
     const task = await Task.findById(req.params.id)
-    if(task.user.toString() !== req.user._id) return res.status(401).json("unauthorised")
     if(task){
         task.title = title || task.title,
         task.description = description || task.description,
@@ -38,7 +38,6 @@ const updateTask = async (req,res) => {
 
 const deleteTask = async (req,res) => {
     const task = await Task.findById(req.params.id)
-    if(task.user.toString() !== req.user._id) return res.status(401).json("unauthorised")
     if(task){
         task.remove()
         res.status(200).json("task removed")
