@@ -1,4 +1,5 @@
 const Task = require("../models/taskModel")
+const io = require("../../app")
 
 const getTasks = async (req,res) => {
     const tasks = await Task.find({user:req.user._id})
@@ -13,6 +14,8 @@ const createTask = async (req,res) => {
         description
     })
     const createdTask = await task.save()
+    //emit task to client
+    io.emit("new task",task)
     res.status(201).json(createdTask)
 }
 
